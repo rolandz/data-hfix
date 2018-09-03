@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes, TypeOperators, KindSignatures, GADTs #-}
-
 module Data.HFix
   ( HFunctor(..)
   , HFix(..)
@@ -18,6 +16,23 @@ data HFix (f :: (* -> *) -> * -> *) ix = HFix { unHFix :: f (HFix f) ix }
 
 hcata :: HFunctor f => (f a ->. a) -> (HFix f ->. a)
 hcata f = f . hmap (hcata f) . unHFix
+
+hana :: HFunctor f => (a ->. f a) -> (a ->. HFix f)
+hana f = HFix . hmap (hana f) . f
+
+hhylo :: HFunctor f => (f b ->. b) -> (a ->. f a) -> (a ->. b)
+hhylo phi psi = hcata phi . hana psi
+
+------------------------------------------------------------------------
+-- HEq and HOrd
+
+class HEq a where heq :: a ix1 -> a ix2 -> Bool
+class HEq a => HOrd a where hcompare :: a ix1 -> a ix2 -> Ordering
+
+data Some f = forall a. Some (f a)
+
+instance HEq f => Eq (Some f) where Some x == Some y = heq x y
+instance HOrd f => Ord (Some f) where Some x `compare` Some y = hcompare x y
 
 ------------------------------------------------------------------------
 -- The constant functor
@@ -78,3 +93,4 @@ size = unConst . hcata sizeF where
 
 e :: Expr Int
 e = cond ((cnst 1 `add` cnst 1) `eq` cnst 2) (cnst 3) (cnst 4)
+
