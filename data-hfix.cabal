@@ -12,7 +12,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Data.HFix
-  default-extensions:  RankNTypes, TypeOperators, KindSignatures, GADTs
+  default-extensions:  RankNTypes, TypeOperators, KindSignatures, GADTs, DeriveFunctor
   build-depends:       base, mtl
   hs-source-dirs:      src
   default-language:    Haskell2010

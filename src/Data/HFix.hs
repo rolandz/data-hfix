@@ -2,6 +2,7 @@ module Data.HFix
   ( HFunctor(..)
   , HFix(..)
   , hcata
+  , type (->.)
   ) where
 
 import Control.Monad.Identity
@@ -37,12 +38,10 @@ instance HOrd f => Ord (Some f) where Some x `compare` Some y = hcompare x y
 ------------------------------------------------------------------------
 -- The constant functor
 
-newtype Const a b = Const a
+newtype Const a b = Const a deriving (Eq, Ord, Show, Functor)
 
 unConst :: Const a b -> a
 unConst (Const x) = x
-
-instance Functor (Const a) where fmap _ (Const x) = Const x
 
 ------------------------------------------------------------------------
 -- Example
@@ -93,4 +92,3 @@ size = unConst . hcata sizeF where
 
 e :: Expr Int
 e = cond ((cnst 1 `add` cnst 1) `eq` cnst 2) (cnst 3) (cnst 4)
-
