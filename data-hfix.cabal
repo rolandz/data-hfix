@@ -11,9 +11,17 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Data.HFix
+  exposed-modules:
+    Data.HAssocList
+    Data.HFix
+    Data.HMap
+    Data.HPrelude
+
+  other-modules:
+    Examples.Expr
+
   default-extensions:  RankNTypes, TypeOperators, KindSignatures, GADTs, DeriveFunctor, ScopedTypeVariables
-  build-depends:       base, mtl
+  build-depends:       base, mtl, containers
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall
