@@ -1,6 +1,19 @@
-module Data.HPrelude where
+module Data.HPrelude
+  ( type (->.)
+  , type (:*.)(..)
+  , Const(..)
+  , HFunctor(..)
+  , Some(..)
+  , unConst
+  , HEq(..)
+  , HOrd(..)
+  , HOrdering(..)
+  , unHOrdering
+  , (:~:)(..)
+  ) where
 
 import Data.Maybe
+import Data.Type.Equality
 
 type f ->. g = forall ix. f ix -> g ix
 infixr 0 ->.
@@ -24,14 +37,14 @@ unConst (Const x) = x
 
 -- a :=: b is the type of witnesses proving that the types a and b are
 -- the same.
-data (:=:) a :: * -> * where Refl :: a :=: a
+--data (:=:) a :: * -> * where Refl :: a :=: a
 
-class HEq a where (==.) :: a ix1 -> a ix2 -> Maybe (ix1 :=: ix2)
+class HEq a where (==.) :: a ix1 -> a ix2 -> Maybe (ix1 :~: ix2)
 class HEq a => HOrd a where hcompare :: a ix1 -> a ix2 -> HOrdering ix1 ix2
 
 infix 4 ==.
 
-data HOrdering a b = HLt | HEq (a :=: b) | HGt
+data HOrdering a b = HLt | HEq (a :~: b) | HGt
 
 unHOrdering :: HOrdering a b -> Ordering
 unHOrdering (HEq _) = EQ
@@ -40,4 +53,3 @@ unHOrdering HGt = GT
 
 instance HEq f => Eq (Some f) where Some x == Some y = isJust $ x ==. y
 instance HOrd f => Ord (Some f) where Some x `compare` Some y = unHOrdering $ hcompare x y
-
